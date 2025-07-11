@@ -1,5 +1,6 @@
 import {
   ActivityIndicator,
+  Alert,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
@@ -14,13 +15,16 @@ import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
 import COLORS from "@/constants/colors";
 import { Link } from "expo-router";
+import { useAuthStore } from "@/store/authStore";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleLogin = () => {};
+  const { user, isLoading, login } = useAuthStore();
+  const handleLogin = async () => {
+    const result = await login(email, password);
+    if (!result.success) Alert.alert("Error", result.error);
+  };
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -32,7 +36,7 @@ const Login = () => {
           <Image
             source={require("../../assets/images/i.png")}
             style={styles.illustrationImage}
-            resizeMode="contain"
+            contentFit="contain"
           />
         </View>
         <View style={styles.card}>

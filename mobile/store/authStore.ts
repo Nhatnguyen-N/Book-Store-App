@@ -7,6 +7,8 @@ interface AuthStore {
   isLoading: boolean;
   register: (username: string, email: string, password: string) => Promise<any>;
   checkAuth: () => Promise<any>;
+  logout: () => Promise<any>;
+  login: (email: string, password: string) => Promise<any>;
 }
 export const useAuthStore = create<AuthStore>((set) => ({
   user: null,
@@ -27,7 +29,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
 
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || "Something went wrong.")
-      await AsyncStorage.setItem("user", JSON.stringify(data));
+      await AsyncStorage.setItem("user", JSON.stringify(data.user));
       await AsyncStorage.setItem("token", data.token);
       set({ token: data.token, user: data.user, isLoading: false });
       return {
@@ -38,6 +40,38 @@ export const useAuthStore = create<AuthStore>((set) => ({
       return { success: false, error: error.message };
     }
   },
+  login: async (email: string, password: string) => {
+    set({ isLoading: true });
+    try {
+      const response = await fetch("https://book-store-app-kwvc.onrender.com/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email, password
+        })
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "Something went wrong.")
+      await AsyncStorage.setItem("user", JSON.stringify(data.user));
+      await AsyncStorage.setItem("token", data.token);
+
+      set({ token: data.token, user: data.user, isLoading: false });
+      return {
+        success: true
+      }
+    } catch (error: any) {
+      set({ isLoading: false });
+      return { success: false, error: error.message };
+    }
+
+  },
+  logout: async () => {
+    await AsyncStorage.removeItem("token");
+    await AsyncStorage.removeItem("user");
+    set({ token: null, user: null });
+  },
   checkAuth: async () => {
     try {
       const token = await AsyncStorage.getItem("token");
@@ -46,7 +80,6 @@ export const useAuthStore = create<AuthStore>((set) => ({
       set({ token, user });
     } catch (error) {
       console.log("Auth check failed", error);
-
     }
   }
 }))
