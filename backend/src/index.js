@@ -10,10 +10,14 @@ import { connectDB } from "./lib/db.js";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-job.start();
+// job.start();
+if (process.env.NODE_ENV === "production") job.start();
 app.use(express.json());
 app.use(cors());
 
+app.get("/api/health", (req, res) => {
+  res.status(200).json({ status: "ok" });
+});
 app.use("/api/auth", authRoutes);
 app.use("/api/books", bookRoutes);
 

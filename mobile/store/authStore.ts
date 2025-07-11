@@ -5,7 +5,8 @@ interface AuthStore {
   user: UserType | null;
   token: string | null;
   isLoading: boolean;
-  register: (username: string, email: string, password: string) => Promise<any>
+  register: (username: string, email: string, password: string) => Promise<any>;
+  checkAuth: () => Promise<any>;
 }
 export const useAuthStore = create<AuthStore>((set) => ({
   user: null,
@@ -35,6 +36,17 @@ export const useAuthStore = create<AuthStore>((set) => ({
     } catch (error: any) {
       set({ isLoading: false });
       return { success: false, error: error.message };
+    }
+  },
+  checkAuth: async () => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+      const userJson = await AsyncStorage.getItem("user");
+      const user = userJson ? JSON.parse(userJson) : null;
+      set({ token, user });
+    } catch (error) {
+      console.log("Auth check failed", error);
+
     }
   }
 }))
