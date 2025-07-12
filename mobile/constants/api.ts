@@ -1,0 +1,1 @@
+export const API_URI = "https://book-store-app-kwvc.onrender.com"
