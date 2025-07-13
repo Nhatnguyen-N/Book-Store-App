@@ -10,11 +10,13 @@ interface AuthStore {
   checkAuth: () => Promise<any>;
   logout: () => Promise<any>;
   login: (email: string, password: string) => Promise<any>;
+  isCheckingAuth: boolean
 }
 export const useAuthStore = create<AuthStore>((set) => ({
   user: null,
   token: null,
   isLoading: false,
+  isCheckingAuth: true,
   register: async (username: string, email: string, password: string) => {
     set({ isLoading: true });
     try {
@@ -81,6 +83,8 @@ export const useAuthStore = create<AuthStore>((set) => ({
       set({ token, user });
     } catch (error) {
       console.log("Auth check failed", error);
+    } finally {
+      set({ isCheckingAuth: false });
     }
   }
 }))
