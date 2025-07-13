@@ -4,7 +4,7 @@ export interface UserType {
   email: string,
   password: string,
   profileImage: string,
-  createdAt: Date,
-  updateAt: Date,
+  createdAt: string,
+  updateAt: string,
   _id: string
 }

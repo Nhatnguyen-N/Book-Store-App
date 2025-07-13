@@ -8,5 +8,5 @@ export interface BookType {
   createdAt: string;
   updatedAt: string;
   user: UserType;
-  id: string;
+  _id: string;
 }
